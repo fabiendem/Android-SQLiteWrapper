@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2014 Fabien Demangeat
  * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,6 +55,19 @@ public class ProviderDatabaseHelper extends SQLiteOpenHelper {
         generateTableCreators();
     }
 
+    /**
+     * Generates {@link TableCreator} objects for different tables.
+     */
+    private void generateTableCreators() {
+        if(mDbColumns == null)
+            return;
+
+        for (String tableName : mDbColumns.keySet()) {
+            Log.d(TAG, String.format("Creating TableCreator for table:%s", tableName));
+            mTableCreators.add(new TableCreator(tableName, mDbColumns.get(tableName)));
+        }
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d(TAG, "onCreate() on db called");
@@ -90,16 +104,6 @@ public class ProviderDatabaseHelper extends SQLiteOpenHelper {
         for (String upgradeTableQuery : upgradeTableQueryList) {
             Log.d(TAG, String.format("Executing db update with query:%s", upgradeTableQuery));
             db.execSQL(upgradeTableQuery);
-        }
-    }
-
-    /**
-     * Generates {@link TableCreator} objects for different tables.
-     */
-    private void generateTableCreators() {
-        for (String tableName : mDbColumns.keySet()) {
-            Log.d(TAG, String.format("Creating TableCreator for table:%s", tableName));
-            mTableCreators.add(new TableCreator(tableName, mDbColumns.get(tableName)));
         }
     }
 
