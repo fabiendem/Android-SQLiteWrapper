@@ -1,0 +1,18 @@
+# Android Specific
+bin/
+gen/
+proguard/
+build_src/
+
+# Android Studio
+.idea/
+.gradle
+local.properties
+out/
+build/
+production/
+*.iml
+*.iws
+*.ipr
+*~
+*.swp
