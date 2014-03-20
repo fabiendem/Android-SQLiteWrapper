@@ -17,8 +17,14 @@
 package com.fabiendem.android.sqlitewrapper.db;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Helper class to create a database helper for a set of columns.
@@ -26,27 +32,99 @@ import android.database.sqlite.SQLiteOpenHelper;
  * This class simply wraps a {@link TableCreator}.
  */
 public class ProviderDatabaseHelper extends SQLiteOpenHelper {
+
+    private static final String TAG = "ProviderDatabaseHelper";
+
     /** The version of the database to create. */
     private final int mVersion;
+
     /** A helper object to create the table. */
-    private final TableCreator mTableCreator;
+    private final List<TableCreator> mTableCreators;
+
+    private final Map<String, DatabaseColumn[]> mDbColumns;
 
     public ProviderDatabaseHelper(Context context, String databaseName,
-                                int version, String tableName,
-                                DatabaseColumn[] columns) {
+                                int version, Map<String, DatabaseColumn[]> dbColumns) {
         super(context, databaseName, null, version);
 
         mVersion = version;
-        mTableCreator = new TableCreator(tableName, columns);
+        mTableCreators = new ArrayList<TableCreator>();
+        mDbColumns = dbColumns;
+
+        generateTableCreators();
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(mTableCreator.getCreateTableQuery(mVersion));
+        Log.d(TAG, "onCreate() on db called");
+        for (TableCreator tableCreator : mTableCreators) {
+            Log.d(TAG, String.format("Creating table %s.", tableCreator.getTableName()));
+            db.execSQL(tableCreator.getCreateTableQuery(mVersion));
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(mTableCreator.getUpgradeTableQuery(oldVersion, newVersion));
+
+        Log.d(TAG, String.format("onUpgrage() on db called with oldVersion=%d, newVersion=%d",
+                oldVersion, newVersion));
+
+        List<String> upgradeTableQueryList = new ArrayList<String>();
+        for (TableCreator tableCreator : mTableCreators) {
+            Log.d(TAG, String.format("processing TableCreator for table:%s",
+                    tableCreator.getTableName()));
+
+            // Check if table already exists in the db
+            if (! tableAlreadyExists(db, tableCreator)) {
+                // try to create new tables for this version, and add it on the top of the list
+                upgradeTableQueryList.add(0, tableCreator.getCreateTableQuery(newVersion));
+            } else {
+                // get SQL queries for existing tables (to add new columns)
+                List<String> upgradeTableQueries = tableCreator.getUpgradeTableQueries(oldVersion,
+                        newVersion);
+                upgradeTableQueryList.addAll(upgradeTableQueries);
+            }
+        }
+
+        // execute queries
+        for (String upgradeTableQuery : upgradeTableQueryList) {
+            Log.d(TAG, String.format("Executing db update with query:%s", upgradeTableQuery));
+            db.execSQL(upgradeTableQuery);
+        }
+    }
+
+    /**
+     * Generates {@link TableCreator} objects for different tables.
+     */
+    private void generateTableCreators() {
+        for (String tableName : mDbColumns.keySet()) {
+            Log.d(TAG, String.format("Creating TableCreator for table:%s", tableName));
+            mTableCreators.add(new TableCreator(tableName, mDbColumns.get(tableName)));
+        }
+    }
+
+    /**
+     * Check if a table already exists in the db
+     * @param db Database queried
+     * @param tableCreator holding the table infos
+     * @return
+     */
+    private boolean tableAlreadyExists(SQLiteDatabase db, TableCreator tableCreator) {
+        String tableExistsCheckQuery = tableCreator.getTableExistsCheckQuery();
+        Cursor cursor = null;
+        boolean tableAlreadyExists = false;
+        try {
+            cursor = db.rawQuery(tableExistsCheckQuery, new String[] {tableCreator.getTableName()});
+            tableAlreadyExists = cursor.moveToFirst();
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Exception while checking if a table already exists", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return tableAlreadyExists;
     }
 }

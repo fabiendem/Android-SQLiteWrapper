@@ -16,7 +16,9 @@
 
 package com.fabiendem.android.sqlitewrapper.db;
 
-import com.fabiendem.android.sqlitewrapper.db.DatabaseColumn;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A helper class to create and upgrade an SQLite table.
@@ -30,15 +32,21 @@ public class TableCreator {
         mColumns = columns;
     }
 
+    public String getTableName() {
+        return mName;
+    }
+
     public String getCreateTableQuery(int version) {
         return String.format("CREATE TABLE %s (%s);", mName, getColumns(version));
     }
 
-    public String getUpgradeTableQuery(int oldVersion, int newVersion) {
-        StringBuilder builder = new StringBuilder();
+    public List<String> getUpgradeTableQueries(int oldVersion, int newVersion) {
+        List<String> upgradeQueries = new ArrayList<String>();
+
         for (DatabaseColumn column : mColumns) {
             int sinceVersion = column.getSinceVersion();
             if (sinceVersion > oldVersion && sinceVersion <= newVersion) {
+                StringBuilder builder = new StringBuilder();
                 builder.append("ALTER TABLE ");
                 builder.append(mName);
                 builder.append(" ADD COLUMN ");
@@ -46,9 +54,14 @@ public class TableCreator {
                 builder.append(" ");
                 builder.append(column.getColumnType());
                 builder.append(";");
+                upgradeQueries.add(builder.toString());
             }
         }
-        return builder.toString();
+        return upgradeQueries;
+    }
+
+    public String getTableExistsCheckQuery() {
+        return "SELECT name FROM sqlite_master WHERE type='table' AND name= ?";
     }
 
     private String getColumns(int version) {
