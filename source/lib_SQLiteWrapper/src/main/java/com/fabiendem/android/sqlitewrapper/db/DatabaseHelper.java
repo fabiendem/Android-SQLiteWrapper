@@ -32,7 +32,7 @@ import java.util.Map;
  * <p>
  * This class simply wraps a {@link TableCreator}.
  */
-public class ProviderDatabaseHelper extends SQLiteOpenHelper {
+public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "ProviderDatabaseHelper";
 
@@ -44,7 +44,7 @@ public class ProviderDatabaseHelper extends SQLiteOpenHelper {
 
     private final Map<String, DatabaseColumn[]> mDbColumns;
 
-    public ProviderDatabaseHelper(Context context, String databaseName,
+    public DatabaseHelper(Context context, String databaseName,
                                 int version, Map<String, DatabaseColumn[]> dbColumns) {
         super(context, databaseName, null, version);
 
