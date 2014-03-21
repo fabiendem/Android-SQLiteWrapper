@@ -22,6 +22,7 @@ public class TableImpl implements Table {
      */
     public TableImpl(String name, int sinceVersion, Column[] columns) {
         mName = name;
+        if (sinceVersion < 1) throw new IllegalArgumentException("Version must be >= 1, was " + sinceVersion);
         mSinceVersion = sinceVersion;
         mColumns = columns;
     }
@@ -43,12 +44,23 @@ public class TableImpl implements Table {
 
     @Override
     public String getCreateTableQuery(int version) {
+        if (version < 1) throw new IllegalArgumentException("Version must be >= 1, was " + version);
         return String.format("CREATE TABLE %s (%s);", mName, getColumnsSql(version));
     }
 
     @Override
     public List<String> getUpgradeTableQueries(int oldVersion, int newVersion) {
+        if (oldVersion < 1)
+            throw new IllegalArgumentException("Old version must be >= 1, was " + oldVersion);
+        if (newVersion < 1)
+            throw new IllegalArgumentException("New version must be >= 1, was " + newVersion);
+
         List<String> commandsSet = new ArrayList<String>();
+        if(oldVersion >= newVersion) {
+            // Downgrade not supported
+            return commandsSet;
+        }
+
         for (Column column : mColumns) {
             int sinceVersion = column.getSinceVersion();
             if (sinceVersion > oldVersion && sinceVersion <= newVersion) {

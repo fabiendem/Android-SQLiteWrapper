@@ -12,7 +12,7 @@ public class ColumnImplTest extends AndroidTestCase {
 
     private static final String TEST_COLUMN_NAME_VALUE = "TestNameColumn";
     private static final String TEST_COLUMN_TYPE_VALUE = "TestTypeColumn";
-    private static final int TEST_COLUMN_VERSION_VALUE = 0;
+    private static final int TEST_COLUMN_VERSION_VALUE = 1;
 
     private Column mColumn;
 

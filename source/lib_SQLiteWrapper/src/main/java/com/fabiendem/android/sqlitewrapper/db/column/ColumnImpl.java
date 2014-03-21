@@ -18,6 +18,7 @@ public class ColumnImpl implements Column {
     public ColumnImpl(String name, String sqlType, int sinceVersion) {
         mName = name;
         mSqlType = sqlType;
+        if (sinceVersion < 1) throw new IllegalArgumentException("Version must be >= 1, was " + sinceVersion);
         mSinceVersion = sinceVersion;
     }
 

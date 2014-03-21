@@ -16,5 +16,6 @@ public interface Table {
     public Column[] getColumns();
 
     public String getCreateTableQuery(int version);
+
     public List<String> getUpgradeTableQueries(int oldVersion, int newVersion);
 }
