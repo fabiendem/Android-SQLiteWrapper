@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package com.fabiendem.android.sqlitewrapper.db;
+package com.fabiendem.android.sqlitewrapper.db.column;
 
 /**
  * Base class for definitions of columns.
  */
-public interface DatabaseColumn {
+public interface Column {
     /** The name of the column. */
     public String getColumnName();
 
@@ -29,4 +29,10 @@ public interface DatabaseColumn {
 
     /** The version of the database in which this column was introduced. */
     public int getSinceVersion();
+
+    /**
+     * The String representing the column in SQL for creation or update
+     * @return
+     */
+    public String getColumnDefinitionSql();
 }
