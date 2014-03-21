@@ -1,4 +1,4 @@
-package com.fabiendem.android.sqlitewrapper.db;
+package com.fabiendem.android.sqlitewrapper.db.query;
 
 import com.fabiendem.android.sqlitewrapper.db.table.Table;
 
