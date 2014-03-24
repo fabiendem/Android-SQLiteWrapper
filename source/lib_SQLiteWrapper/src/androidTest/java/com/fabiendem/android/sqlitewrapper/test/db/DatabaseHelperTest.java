@@ -7,7 +7,6 @@ import android.test.MoreAsserts;
 
 import com.fabiendem.android.sqlitewrapper.db.DatabaseHelper;
 import com.fabiendem.android.sqlitewrapper.db.column.ColumnImpl;
-import com.fabiendem.android.sqlitewrapper.db.query.QueryFactoryImpl;
 import com.fabiendem.android.sqlitewrapper.db.table.Table;
 import com.fabiendem.android.sqlitewrapper.db.table.TableImpl;
 
@@ -48,9 +47,9 @@ public class DatabaseHelperTest extends AndroidTestCase {
         table.putColumn(new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
         table.putColumn(new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
         table.putColumn(new ColumnImpl(COLUMN_3, "string", VERSION_ONE));
-        mTables.add(table);
 
-        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_ONE, mTables, new QueryFactoryImpl());
+        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_ONE);
+        mDatabaseHelper.putTable(table);
 
         SQLiteDatabase sqlDb = mDatabaseHelper.getWritableDatabase();
         assertNotNull(sqlDb);
@@ -72,10 +71,10 @@ public class DatabaseHelperTest extends AndroidTestCase {
         table.putColumn(new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
         table.putColumn(new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
         table.putColumn(new ColumnImpl(COLUMN_3, "string", VERSION_ONE));
-        mTables.add(table);
 
         int highVersionDb = 5;
-        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, highVersionDb, mTables, new QueryFactoryImpl());
+        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, highVersionDb);
+        mDatabaseHelper.putTable(table);
 
         SQLiteDatabase sqlDb = mDatabaseHelper.getWritableDatabase();
         assertNotNull(sqlDb);
@@ -97,15 +96,15 @@ public class DatabaseHelperTest extends AndroidTestCase {
         table.putColumn(new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
         table.putColumn(new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
         table.putColumn(new ColumnImpl(COLUMN_3, "boolean", VERSION_ONE));
-        mTables.add(table);
 
         Table table2 = new TableImpl(TABLE2, VERSION_ONE);
         table2.putColumn(new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
         table2.putColumn(new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
         table2.putColumn(new ColumnImpl(COLUMN_3, "boolean", VERSION_ONE));
-        mTables.add(table2);
 
-        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_ONE, mTables, new QueryFactoryImpl());
+        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_ONE);
+        mDatabaseHelper.putTable(table);
+        mDatabaseHelper.putTable(table2);
 
         SQLiteDatabase sqlDb = mDatabaseHelper.getWritableDatabase();
         assertNotNull(sqlDb);
@@ -128,9 +127,10 @@ public class DatabaseHelperTest extends AndroidTestCase {
         table.putColumn(new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
         table.putColumn(new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
         table.putColumn(new ColumnImpl(COLUMN_3, "boolean", VERSION_ONE));
-        mTables.add(table);
 
-        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_ONE, mTables, new QueryFactoryImpl());
+        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_ONE);
+        mDatabaseHelper.putTable(table);
+
         SQLiteDatabase sqlDb = mDatabaseHelper.getWritableDatabase();
         assertNotNull(sqlDb);
         assertEquals(VERSION_ONE, sqlDb.getVersion());
@@ -140,9 +140,9 @@ public class DatabaseHelperTest extends AndroidTestCase {
         table.putColumn(new ColumnImpl(COLUMN_4, "integer", VERSION_TWO));
         table.putColumn(new ColumnImpl(COLUMN_5, "integer", VERSION_TWO));
 
-        //mTables.set(0, new TableImpl(TABLE1, VERSION_ONE, columns));
+        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_TWO);
+        mDatabaseHelper.putTable(table);
 
-        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_TWO, mTables, new QueryFactoryImpl());
         sqlDb = mDatabaseHelper.getWritableDatabase();
         assertNotNull(sqlDb);
         assertEquals(2, sqlDb.getVersion());

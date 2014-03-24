@@ -94,11 +94,8 @@ public class TableImplTest extends AndroidTestCase {
     }
 
     public void testGetUpgradeTableQuery() {
-        List<String> upgradeTableQueries = mTable.getUpgradeTableQueries(1, 1);
-        assertEquals(0, upgradeTableQueries.size());
-
         // Upgrade 1 to 2
-        upgradeTableQueries = mTable.getUpgradeTableQueries(1, 2);
+        List<String> upgradeTableQueries = mTable.getUpgradeTableQueries(1, 2);
         assertEquals(1, upgradeTableQueries.size());
         String upgrade1to2QueryExpected = "ALTER TABLE " + mTable.getName() + " " +
                 "ADD COLUMN " +

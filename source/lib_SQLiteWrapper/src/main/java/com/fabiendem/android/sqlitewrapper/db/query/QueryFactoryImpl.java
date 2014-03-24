@@ -3,6 +3,7 @@ package com.fabiendem.android.sqlitewrapper.db.query;
 import com.fabiendem.android.sqlitewrapper.db.table.Table;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
 public class QueryFactoryImpl implements QueryFactory {
 
     @Override
-    public List<String> getCreateTableQueries(List<Table> tables, int versionDatabase) {
+    public List<String> getCreateTableQueries(Collection<Table> tables, int versionDatabase) {
         List<String> createQueries = new ArrayList<String>();
         for (Table table : tables) {
             if(table.getSinceVersion() <= versionDatabase) {
@@ -22,7 +23,7 @@ public class QueryFactoryImpl implements QueryFactory {
     }
 
     @Override
-    public List<String> getUpgradeTableQueries(List<Table> tables, int oldVersion, int newVersion) {
+    public List<String> getUpgradeTableQueries(Collection<Table> tables, int oldVersion, int newVersion) {
         List<String> upgradeTableQueryList = new ArrayList<String>();
 
         // For each table
