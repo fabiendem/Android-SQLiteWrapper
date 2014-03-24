@@ -70,12 +70,14 @@ public class TableImpl implements Table {
         if (newVersion < 1)
             throw new IllegalArgumentException("New version must be >= 1, was " + newVersion);
 
-        List<String> commandsSet = new ArrayList<String>();
         if(oldVersion >= newVersion) {
             // Downgrade not supported
-            return commandsSet;
+            throw new IllegalArgumentException("oldVersion " + oldVersion +
+                    " >= newVersion " + newVersion +
+                    " downgrade not supported yet");
         }
 
+        List<String> commandsSet = new ArrayList<String>();
         for (String columnName : mColumns.keySet()) {
             Column column = mColumns.get(columnName);
             int sinceVersion = column.getSinceVersion();
