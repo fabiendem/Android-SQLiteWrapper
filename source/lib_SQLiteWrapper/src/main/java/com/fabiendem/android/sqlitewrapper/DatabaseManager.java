@@ -1,8 +1,7 @@
 package com.fabiendem.android.sqlitewrapper;
 
 import android.database.sqlite.SQLiteDatabase;
-
-import com.fabiendem.android.sqlitewrapper.db.DatabaseHelper;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,19 +26,19 @@ public class DatabaseManager {
     private static DatabaseManager sInstance;
 
     /**
-     * Static field holding the DatabaseHelper
+     * Static field holding the SQLiteOpenHelper
      */
-    private static DatabaseHelper mDatabaseHelper;
+    private static SQLiteOpenHelper mSQLiteOpenHelper;
 
     /**
      * The SQLiteDatabase
      */
     private SQLiteDatabase mDatabase;
 
-    public static synchronized void initInstance(DatabaseHelper helper) {
+    public static synchronized void initInstance(SQLiteOpenHelper vSQLiteOpenHelper) {
         if (sInstance == null) {
             sInstance = new DatabaseManager();
-            mDatabaseHelper = helper;
+            mSQLiteOpenHelper = vSQLiteOpenHelper;
         }
     }
 
@@ -55,7 +54,7 @@ public class DatabaseManager {
     public synchronized SQLiteDatabase openDatabase() {
         if(mOpenCounter.incrementAndGet() == 1) {
             // Opening new database
-            mDatabase = mDatabaseHelper.getWritableDatabase();
+            mDatabase = mSQLiteOpenHelper.getWritableDatabase();
         }
         return mDatabase;
     }

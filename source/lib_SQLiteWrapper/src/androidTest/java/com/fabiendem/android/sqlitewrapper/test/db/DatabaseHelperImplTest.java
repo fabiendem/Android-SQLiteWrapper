@@ -5,18 +5,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 import android.test.MoreAsserts;
 
-import com.fabiendem.android.sqlitewrapper.db.DatabaseHelper;
+import com.fabiendem.android.sqlitewrapper.db.databaseHelper.DatabaseHelperImpl;
 import com.fabiendem.android.sqlitewrapper.db.column.ColumnImpl;
 import com.fabiendem.android.sqlitewrapper.db.table.Table;
 import com.fabiendem.android.sqlitewrapper.db.table.TableImpl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by Fabien on 24/03/2014.
  */
-public class DatabaseHelperTest extends AndroidTestCase {
+public class DatabaseHelperImplTest extends AndroidTestCase {
 
     private static final String DATABASE_NAME = "DB_TEST";
 
@@ -32,14 +29,11 @@ public class DatabaseHelperTest extends AndroidTestCase {
     private static final String COLUMN_4 = "kikou3";
     private static final String COLUMN_5 = "kikou4";
 
-    private static List<Table> mTables;
-
-    private DatabaseHelper mDatabaseHelper;
+    private DatabaseHelperImpl mDatabaseHelper;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        mTables = new ArrayList<Table>();
     }
 
     public void testOnCreateOneTable() {
@@ -48,7 +42,7 @@ public class DatabaseHelperTest extends AndroidTestCase {
         table.putColumn(new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
         table.putColumn(new ColumnImpl(COLUMN_3, "string", VERSION_ONE));
 
-        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_ONE);
+        mDatabaseHelper = new DatabaseHelperImpl(getContext(), DATABASE_NAME, VERSION_ONE);
         mDatabaseHelper.putTable(table);
 
         SQLiteDatabase sqlDb = mDatabaseHelper.getWritableDatabase();
@@ -73,7 +67,7 @@ public class DatabaseHelperTest extends AndroidTestCase {
         table.putColumn(new ColumnImpl(COLUMN_3, "string", VERSION_ONE));
 
         int highVersionDb = 5;
-        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, highVersionDb);
+        mDatabaseHelper = new DatabaseHelperImpl(getContext(), DATABASE_NAME, highVersionDb);
         mDatabaseHelper.putTable(table);
 
         SQLiteDatabase sqlDb = mDatabaseHelper.getWritableDatabase();
@@ -102,7 +96,7 @@ public class DatabaseHelperTest extends AndroidTestCase {
         table2.putColumn(new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
         table2.putColumn(new ColumnImpl(COLUMN_3, "boolean", VERSION_ONE));
 
-        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_ONE);
+        mDatabaseHelper = new DatabaseHelperImpl(getContext(), DATABASE_NAME, VERSION_ONE);
         mDatabaseHelper.putTable(table);
         mDatabaseHelper.putTable(table2);
 
@@ -128,7 +122,7 @@ public class DatabaseHelperTest extends AndroidTestCase {
         table.putColumn(new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
         table.putColumn(new ColumnImpl(COLUMN_3, "boolean", VERSION_ONE));
 
-        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_ONE);
+        mDatabaseHelper = new DatabaseHelperImpl(getContext(), DATABASE_NAME, VERSION_ONE);
         mDatabaseHelper.putTable(table);
 
         SQLiteDatabase sqlDb = mDatabaseHelper.getWritableDatabase();
@@ -140,7 +134,7 @@ public class DatabaseHelperTest extends AndroidTestCase {
         table.putColumn(new ColumnImpl(COLUMN_4, "integer", VERSION_TWO));
         table.putColumn(new ColumnImpl(COLUMN_5, "integer", VERSION_TWO));
 
-        mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_TWO);
+        mDatabaseHelper = new DatabaseHelperImpl(getContext(), DATABASE_NAME, VERSION_TWO);
         mDatabaseHelper.putTable(table);
 
         sqlDb = mDatabaseHelper.getWritableDatabase();

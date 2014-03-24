@@ -1,4 +1,4 @@
-package com.fabiendem.android.sqlitewrapper.db;
+package com.fabiendem.android.sqlitewrapper.db.databaseHelper;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,13 +15,13 @@ import java.util.Map;
 /**
  * Created by Fabien on 21/03/2014.
  */
-public class DatabaseHelper extends SQLiteOpenHelper {
+public class DatabaseHelperImpl extends SQLiteOpenHelper implements DatabaseHelper {
 
     private QueryFactory mQueryFactory;
     private int mVersionDatabase;
     private Map<String, Table> mTables;
 
-    public DatabaseHelper(Context context,
+    public DatabaseHelperImpl(Context context,
                           String nameDatabase,
                           int versionDatabase,
                           Map<String, Table> tables,
@@ -33,7 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         mQueryFactory = queryFactory;
     }
 
-    public DatabaseHelper(Context context,
+    public DatabaseHelperImpl(Context context,
                           String nameDatabase,
                           int versionDatabase) {
         super(context, nameDatabase, null, versionDatabase);
@@ -43,16 +43,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         mQueryFactory = new QueryFactoryImpl();
     }
 
+    @Override
     public void setQueryFactory(QueryFactory queryFactory) {
         mQueryFactory = queryFactory;
     }
 
+    @Override
     public void putTable(Table table) {
         mTables.put(table.getName(), table);
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void createTables(SQLiteDatabase db) {
         List<String> createQueries = mQueryFactory.getCreateTableQueries(mTables.values(), mVersionDatabase);
 
         for (String createTableQuery : createQueries) {
@@ -61,12 +63,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) {
         List<String> upgradeTableQueries = mQueryFactory.getUpgradeTableQueries(mTables.values(), oldVersion, newVersion);
         for (String queryUpgrade : upgradeTableQueries) {
             db.execSQL(queryUpgrade);
         }
     }
 
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        createTables(db);
+    }
 
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        upgradeTables(db, oldVersion, newVersion);
+    }
 }
