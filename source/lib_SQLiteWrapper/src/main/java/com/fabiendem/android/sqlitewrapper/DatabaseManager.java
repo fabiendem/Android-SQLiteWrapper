@@ -47,7 +47,6 @@ public class DatabaseManager {
             throw new IllegalStateException(DatabaseManager.class.getSimpleName() +
                     " is not initialized, call initializeInstance(..) method first.");
         }
-
         return sInstance;
     }
 
@@ -63,7 +62,6 @@ public class DatabaseManager {
         if(mOpenCounter.decrementAndGet() == 0) {
             // Closing database
             mDatabase.close();
-
         }
     }
 }

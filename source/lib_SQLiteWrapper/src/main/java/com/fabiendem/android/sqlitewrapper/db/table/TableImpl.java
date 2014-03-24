@@ -1,6 +1,7 @@
 package com.fabiendem.android.sqlitewrapper.db.table;
 
 import com.fabiendem.android.sqlitewrapper.db.column.Column;
+import com.fabiendem.android.sqlitewrapper.db.column.ColumnImpl;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -50,6 +51,11 @@ public class TableImpl implements Table {
     @Override
     public void putColumn(Column column) {
         mColumns.put(column.getColumnName(), column);
+    }
+
+    @Override
+    public void putColumn(String columnName, String columnType, int sinceVersion) {
+        mColumns.put(columnName, new ColumnImpl(columnName, columnType, sinceVersion));
     }
 
     @Override

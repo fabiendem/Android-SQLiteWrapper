@@ -6,7 +6,6 @@ import android.test.AndroidTestCase;
 import android.test.MoreAsserts;
 
 import com.fabiendem.android.sqlitewrapper.db.databaseHelper.DatabaseHelperImpl;
-import com.fabiendem.android.sqlitewrapper.db.column.ColumnImpl;
 import com.fabiendem.android.sqlitewrapper.db.table.Table;
 import com.fabiendem.android.sqlitewrapper.db.table.TableImpl;
 
@@ -38,9 +37,9 @@ public class DatabaseHelperImplTest extends AndroidTestCase {
 
     public void testOnCreateOneTable() {
         Table table = new TableImpl(TABLE1, VERSION_ONE);
-        table.putColumn(new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
-        table.putColumn(new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
-        table.putColumn(new ColumnImpl(COLUMN_3, "string", VERSION_ONE));
+        table.putColumn(COLUMN_1, "integer primary_key", VERSION_ONE);
+        table.putColumn(COLUMN_2, "integer", VERSION_ONE);
+        table.putColumn(COLUMN_3, "string", VERSION_ONE);
 
         mDatabaseHelper = new DatabaseHelperImpl(getContext(), DATABASE_NAME, VERSION_ONE);
         mDatabaseHelper.putTable(table);
@@ -62,9 +61,9 @@ public class DatabaseHelperImplTest extends AndroidTestCase {
 
     public void testOnCreateOneTableWithHighDBVersion() {
         Table table = new TableImpl(TABLE1, VERSION_ONE);
-        table.putColumn(new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
-        table.putColumn(new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
-        table.putColumn(new ColumnImpl(COLUMN_3, "string", VERSION_ONE));
+        table.putColumn(COLUMN_1, "integer primary_key", VERSION_ONE);
+        table.putColumn(COLUMN_2, "integer", VERSION_ONE);
+        table.putColumn(COLUMN_3, "string", VERSION_ONE);
 
         int highVersionDb = 5;
         mDatabaseHelper = new DatabaseHelperImpl(getContext(), DATABASE_NAME, highVersionDb);
@@ -87,14 +86,14 @@ public class DatabaseHelperImplTest extends AndroidTestCase {
 
     public void testOnCreateMultipleTables() {
         Table table = new TableImpl(TABLE1, VERSION_ONE);
-        table.putColumn(new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
-        table.putColumn(new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
-        table.putColumn(new ColumnImpl(COLUMN_3, "boolean", VERSION_ONE));
+        table.putColumn(COLUMN_1, "integer primary_key", VERSION_ONE);
+        table.putColumn(COLUMN_2, "integer", VERSION_ONE);
+        table.putColumn(COLUMN_3, "boolean", VERSION_ONE);
 
         Table table2 = new TableImpl(TABLE2, VERSION_ONE);
-        table2.putColumn(new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
-        table2.putColumn(new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
-        table2.putColumn(new ColumnImpl(COLUMN_3, "boolean", VERSION_ONE));
+        table2.putColumn(COLUMN_1, "integer primary_key", VERSION_ONE);
+        table2.putColumn(COLUMN_2, "integer", VERSION_ONE);
+        table2.putColumn(COLUMN_3, "boolean", VERSION_ONE);
 
         mDatabaseHelper = new DatabaseHelperImpl(getContext(), DATABASE_NAME, VERSION_ONE);
         mDatabaseHelper.putTable(table);
@@ -118,9 +117,9 @@ public class DatabaseHelperImplTest extends AndroidTestCase {
     public void testOnUpdateOneTable() {
         // First create a table
         Table table = new TableImpl(TABLE1, VERSION_ONE);
-        table.putColumn(new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
-        table.putColumn(new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
-        table.putColumn(new ColumnImpl(COLUMN_3, "boolean", VERSION_ONE));
+        table.putColumn(COLUMN_1, "integer primary_key", VERSION_ONE);
+        table.putColumn(COLUMN_2, "integer", VERSION_ONE);
+        table.putColumn(COLUMN_3, "boolean", VERSION_ONE);
 
         mDatabaseHelper = new DatabaseHelperImpl(getContext(), DATABASE_NAME, VERSION_ONE);
         mDatabaseHelper.putTable(table);
@@ -131,8 +130,8 @@ public class DatabaseHelperImplTest extends AndroidTestCase {
         assertTrue(sqlDb.isOpen());
         sqlDb.close();
 
-        table.putColumn(new ColumnImpl(COLUMN_4, "integer", VERSION_TWO));
-        table.putColumn(new ColumnImpl(COLUMN_5, "integer", VERSION_TWO));
+        table.putColumn(COLUMN_4, "integer", VERSION_TWO);
+        table.putColumn(COLUMN_5, "integer", VERSION_TWO);
 
         mDatabaseHelper = new DatabaseHelperImpl(getContext(), DATABASE_NAME, VERSION_TWO);
         mDatabaseHelper.putTable(table);

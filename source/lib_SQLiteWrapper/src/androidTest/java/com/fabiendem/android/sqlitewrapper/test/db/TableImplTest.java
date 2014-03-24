@@ -28,25 +28,24 @@ public class TableImplTest extends AndroidTestCase {
     private static final String COLUMN_4 = "kikou3";
 
     // Use LinkedHashMap to respect the order for the CREATE query
-    private static final Map<String, Column> COLUMNS_TEST_VALUE = new LinkedHashMap<String, Column>();
-    static {
-        COLUMNS_TEST_VALUE.put(COLUMN_1, new ColumnImpl(COLUMN_1, "integer primary_key", 1));
-        COLUMNS_TEST_VALUE.put(COLUMN_2, new ColumnImpl(COLUMN_2, "string", 1));
-        COLUMNS_TEST_VALUE.put(COLUMN_3, new ColumnImpl(COLUMN_3, "integer", 2));
-        COLUMNS_TEST_VALUE.put(COLUMN_4, new ColumnImpl(COLUMN_4, "boolean", 3));
-    }
+    private Map<String, Column> mColumnsTestValue;
 
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        mTable = new TableImpl(TABLE_NAME_TEST_VALUE, TABLE_SINCE_VERSION_TEST_VALUE, COLUMNS_TEST_VALUE);
+        mColumnsTestValue = new LinkedHashMap<String, Column>();
+        mColumnsTestValue.put(COLUMN_1, new ColumnImpl(COLUMN_1, "integer primary_key", 1));
+        mColumnsTestValue.put(COLUMN_2, new ColumnImpl(COLUMN_2, "string", 1));
+        mColumnsTestValue.put(COLUMN_3, new ColumnImpl(COLUMN_3, "integer", 2));
+        mColumnsTestValue.put(COLUMN_4, new ColumnImpl(COLUMN_4, "boolean", 3));
+        mTable = new TableImpl(TABLE_NAME_TEST_VALUE, TABLE_SINCE_VERSION_TEST_VALUE, mColumnsTestValue);
     }
 
     public void testGetters() {
         assertEquals(TABLE_NAME_TEST_VALUE, mTable.getName());
         assertEquals(TABLE_SINCE_VERSION_TEST_VALUE, mTable.getSinceVersion());
-        assertEquals(COLUMNS_TEST_VALUE, mTable.getColumns());
+        assertEquals(mColumnsTestValue, mTable.getColumns());
     }
 
     public void testPutNewColumn() {
@@ -61,13 +60,25 @@ public class TableImplTest extends AndroidTestCase {
         assertEquals(columnInserted, columns.get("kikou4"));
     }
 
+    public void testPutNewColumnShortVersion() {
+        Map<String, Column> columns = mTable.getColumns();
+        assertEquals(4, columns.size());
+
+        mTable.putColumn("kikou4", "integer", 1);
+
+        columns = mTable.getColumns();
+        assertEquals(5, columns.size());
+        Column columnInserted = new ColumnImpl("kikou4", "integer", 1);
+        assertEquals(columnInserted, columns.get("kikou4"));
+    }
+
     public void testGetCreateTableQuery() {
         // Version 1
         String createTableQuery = mTable.getCreateTableQuery(1);
         String createTableQueryExpected =
                 "CREATE TABLE " + mTable.getName() + " (" +
-                        COLUMNS_TEST_VALUE.get(COLUMN_1).getColumnDefinitionSql() + ", " +
-                        COLUMNS_TEST_VALUE.get(COLUMN_2).getColumnDefinitionSql() +
+                        mColumnsTestValue.get(COLUMN_1).getColumnDefinitionSql() + ", " +
+                        mColumnsTestValue.get(COLUMN_2).getColumnDefinitionSql() +
                         ");";
         assertEquals(createTableQueryExpected, createTableQuery);
 
@@ -75,9 +86,9 @@ public class TableImplTest extends AndroidTestCase {
         createTableQuery = mTable.getCreateTableQuery(2);
         createTableQueryExpected =
                 "CREATE TABLE " + mTable.getName() + " (" +
-                        COLUMNS_TEST_VALUE.get(COLUMN_1).getColumnDefinitionSql() + ", " +
-                        COLUMNS_TEST_VALUE.get(COLUMN_2).getColumnDefinitionSql() + ", " +
-                        COLUMNS_TEST_VALUE.get(COLUMN_3).getColumnDefinitionSql() +
+                        mColumnsTestValue.get(COLUMN_1).getColumnDefinitionSql() + ", " +
+                        mColumnsTestValue.get(COLUMN_2).getColumnDefinitionSql() + ", " +
+                        mColumnsTestValue.get(COLUMN_3).getColumnDefinitionSql() +
                         ");";
         assertEquals(createTableQueryExpected, createTableQuery);
 
@@ -85,10 +96,10 @@ public class TableImplTest extends AndroidTestCase {
         createTableQuery = mTable.getCreateTableQuery(3);
         createTableQueryExpected =
                 "CREATE TABLE " + mTable.getName() + " (" +
-                        COLUMNS_TEST_VALUE.get(COLUMN_1).getColumnDefinitionSql() + ", " +
-                        COLUMNS_TEST_VALUE.get(COLUMN_2).getColumnDefinitionSql() + ", " +
-                        COLUMNS_TEST_VALUE.get(COLUMN_3).getColumnDefinitionSql() + ", " +
-                        COLUMNS_TEST_VALUE.get(COLUMN_4).getColumnDefinitionSql() +
+                        mColumnsTestValue.get(COLUMN_1).getColumnDefinitionSql() + ", " +
+                        mColumnsTestValue.get(COLUMN_2).getColumnDefinitionSql() + ", " +
+                        mColumnsTestValue.get(COLUMN_3).getColumnDefinitionSql() + ", " +
+                        mColumnsTestValue.get(COLUMN_4).getColumnDefinitionSql() +
                         ");";
         assertEquals(createTableQueryExpected, createTableQuery);
     }
@@ -99,7 +110,7 @@ public class TableImplTest extends AndroidTestCase {
         assertEquals(1, upgradeTableQueries.size());
         String upgrade1to2QueryExpected = "ALTER TABLE " + mTable.getName() + " " +
                 "ADD COLUMN " +
-                COLUMNS_TEST_VALUE.get(COLUMN_3).getColumnDefinitionSql() +
+                mColumnsTestValue.get(COLUMN_3).getColumnDefinitionSql() +
                 ";";
         assertEquals(upgrade1to2QueryExpected, upgradeTableQueries.get(0));
 
@@ -108,7 +119,7 @@ public class TableImplTest extends AndroidTestCase {
         assertEquals(1, upgradeTableQueries.size());
         String upgrade2to3QueryExpected = "ALTER TABLE " + mTable.getName() + " " +
                 "ADD COLUMN " +
-                COLUMNS_TEST_VALUE.get(COLUMN_4).getColumnDefinitionSql() +
+                mColumnsTestValue.get(COLUMN_4).getColumnDefinitionSql() +
                 ";";
         assertEquals(upgrade2to3QueryExpected, upgradeTableQueries.get(0));
 
@@ -118,11 +129,11 @@ public class TableImplTest extends AndroidTestCase {
         List<String> upgrade1to3QueriesExpected = new ArrayList<String>();
         upgrade1to3QueriesExpected.add("ALTER TABLE " + mTable.getName() + " " +
                                         "ADD COLUMN " +
-                                        COLUMNS_TEST_VALUE.get(COLUMN_3).getColumnDefinitionSql() +
+                mColumnsTestValue.get(COLUMN_3).getColumnDefinitionSql() +
                                         ";");
         upgrade1to3QueriesExpected.add("ALTER TABLE " + mTable.getName() + " " +
                 "ADD COLUMN " +
-                COLUMNS_TEST_VALUE.get(COLUMN_4).getColumnDefinitionSql() +
+                mColumnsTestValue.get(COLUMN_4).getColumnDefinitionSql() +
                 ";");
 
         assertEquals(upgrade1to3QueriesExpected, upgradeTableQueries);

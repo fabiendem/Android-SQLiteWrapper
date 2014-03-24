@@ -16,6 +16,8 @@ public interface Table {
 
     public void putColumn(Column column);
 
+    public void putColumn(String columnName, String columnType, int sinceVersion);
+
     public Map<String, Column> getColumns();
 
     public String getCreateTableQuery(int version);
