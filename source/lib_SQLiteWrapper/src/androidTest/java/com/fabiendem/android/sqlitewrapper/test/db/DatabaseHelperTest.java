@@ -3,6 +3,7 @@ package com.fabiendem.android.sqlitewrapper.test.db;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
+import android.test.MoreAsserts;
 
 import com.fabiendem.android.sqlitewrapper.db.DatabaseHelper;
 import com.fabiendem.android.sqlitewrapper.db.column.Column;
@@ -12,7 +13,9 @@ import com.fabiendem.android.sqlitewrapper.db.table.Table;
 import com.fabiendem.android.sqlitewrapper.db.table.TableImpl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Fabien on 24/03/2014.
@@ -20,11 +23,18 @@ import java.util.List;
 public class DatabaseHelperTest extends AndroidTestCase {
 
     private static final String DATABASE_NAME = "DB_TEST";
-    private static final int VERSION_ONE = 1;
-    private static final int VERSION_TWO = 2;
 
     private static final String TABLE1 = "Table1";
     private static final String TABLE2 = "Table2";
+
+    private static final int VERSION_ONE = 1;
+    private static final int VERSION_TWO = 2;
+
+    private static final String COLUMN_1 = "id";
+    private static final String COLUMN_2 = "kikou1";
+    private static final String COLUMN_3 = "kikou2";
+    private static final String COLUMN_4 = "kikou3";
+    private static final String COLUMN_5 = "kikou4";
 
     private static List<Table> mTables;
 
@@ -37,11 +47,12 @@ public class DatabaseHelperTest extends AndroidTestCase {
     }
 
     public void testOnCreateOneTable() {
-        mTables.add(new TableImpl(TABLE1, VERSION_ONE, new Column[]{
-                new ColumnImpl("Column1", "integer", VERSION_ONE),
-                new ColumnImpl("Column2", "integer", VERSION_ONE),
-                new ColumnImpl("Column3", "integer", VERSION_ONE)
-        }));
+        Map<String, Column> columns = new HashMap<String, Column>();
+        columns.put(COLUMN_1, new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
+        columns.put(COLUMN_2, new ColumnImpl(COLUMN_2, "integer primary_key", VERSION_ONE));
+        columns.put(COLUMN_3, new ColumnImpl(COLUMN_3, "integer primary_key", VERSION_ONE));
+
+        mTables.add(new TableImpl(TABLE1, VERSION_ONE, columns));
         mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_ONE, mTables, new QueryFactoryImpl());
 
         SQLiteDatabase sqlDb = mDatabaseHelper.getWritableDatabase();
@@ -60,11 +71,12 @@ public class DatabaseHelperTest extends AndroidTestCase {
     }
 
     public void testOnCreateOneTableWithHighDBVersion() {
-        mTables.add(new TableImpl(TABLE1, VERSION_ONE, new Column[]{
-                new ColumnImpl("Column1", "integer", VERSION_ONE),
-                new ColumnImpl("Column2", "integer", VERSION_ONE),
-                new ColumnImpl("Column3", "integer", VERSION_ONE)
-        }));
+        Map<String, Column> columns = new HashMap<String, Column>();
+        columns.put(COLUMN_1, new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
+        columns.put(COLUMN_2, new ColumnImpl(COLUMN_2, "integer primary_key", VERSION_ONE));
+        columns.put(COLUMN_3, new ColumnImpl(COLUMN_3, "integer primary_key", VERSION_ONE));
+
+        mTables.add(new TableImpl(TABLE1, VERSION_ONE, columns));
         int highVersionDb = 5;
         mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, highVersionDb, mTables, new QueryFactoryImpl());
 
@@ -84,21 +96,18 @@ public class DatabaseHelperTest extends AndroidTestCase {
     }
 
     public void testOnCreateMultipleTables() {
-        mTables.add(new TableImpl(TABLE1, VERSION_ONE, new Column[]{
-                new ColumnImpl("Column1", "integer", VERSION_ONE),
-                new ColumnImpl("Column2", "integer", VERSION_ONE),
-                new ColumnImpl("Column3", "integer", VERSION_ONE)
-        }));
-        mTables.add(new TableImpl(TABLE2, VERSION_ONE, new Column[]{
-                new ColumnImpl("Column1", "integer", VERSION_ONE),
-                new ColumnImpl("Column2", "integer", VERSION_ONE),
-                new ColumnImpl("Column3", "integer", VERSION_ONE)
-        }));
-        mTables.add(new TableImpl(TABLE2, VERSION_TWO, new Column[]{
-                new ColumnImpl("Column1", "integer", VERSION_TWO),
-                new ColumnImpl("Column2", "integer", VERSION_TWO),
-                new ColumnImpl("Column3", "integer", VERSION_TWO)
-        }));
+        Map<String, Column> columns = new HashMap<String, Column>();
+        columns.put(COLUMN_1, new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
+        columns.put(COLUMN_2, new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
+        columns.put(COLUMN_3, new ColumnImpl(COLUMN_3, "boolean", VERSION_ONE));
+        mTables.add(new TableImpl(TABLE1, VERSION_ONE, columns));
+
+        columns = new HashMap<String, Column>();
+        columns.put(COLUMN_1, new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
+        columns.put(COLUMN_2, new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
+        columns.put(COLUMN_3, new ColumnImpl(COLUMN_3, "boolean", VERSION_ONE));
+        mTables.add(new TableImpl(TABLE2, VERSION_ONE, columns));
+
         mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_ONE, mTables, new QueryFactoryImpl());
 
         SQLiteDatabase sqlDb = mDatabaseHelper.getWritableDatabase();
@@ -118,12 +127,12 @@ public class DatabaseHelperTest extends AndroidTestCase {
 
     public void testOnUpdateOneTable() {
         // First create a table
+        Map<String, Column> columns = new HashMap<String, Column>();
+        columns.put(COLUMN_1, new ColumnImpl(COLUMN_1, "integer primary_key", VERSION_ONE));
+        columns.put(COLUMN_2, new ColumnImpl(COLUMN_2, "integer", VERSION_ONE));
+        columns.put(COLUMN_3, new ColumnImpl(COLUMN_3, "boolean", VERSION_ONE));
+        mTables.add(new TableImpl(TABLE1, VERSION_ONE, columns));
 
-        mTables.add(new TableImpl(TABLE1, VERSION_ONE, new Column[]{
-                new ColumnImpl("Column1", "integer", VERSION_ONE),
-                new ColumnImpl("Column2", "integer", VERSION_ONE),
-                new ColumnImpl("Column3", "integer", VERSION_ONE)
-        }));
         mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_ONE, mTables, new QueryFactoryImpl());
         SQLiteDatabase sqlDb = mDatabaseHelper.getWritableDatabase();
         assertNotNull(sqlDb);
@@ -131,13 +140,11 @@ public class DatabaseHelperTest extends AndroidTestCase {
         assertTrue(sqlDb.isOpen());
         sqlDb.close();
 
-        mTables.set(0, new TableImpl(TABLE1, VERSION_ONE, new Column[]{
-                new ColumnImpl("Column1", "integer", VERSION_ONE),
-                new ColumnImpl("Column2", "integer", VERSION_ONE),
-                new ColumnImpl("Column3", "integer", VERSION_ONE),
-                new ColumnImpl("Column4", "integer", VERSION_TWO),
-                new ColumnImpl("Column5", "integer", VERSION_TWO)
-        }));
+        columns.put(COLUMN_4, new ColumnImpl(COLUMN_4, "integer", VERSION_TWO));
+        columns.put(COLUMN_5, new ColumnImpl(COLUMN_5, "integer", VERSION_TWO));
+
+        mTables.set(0, new TableImpl(TABLE1, VERSION_ONE, columns));
+
         mDatabaseHelper = new DatabaseHelper(getContext(), DATABASE_NAME, VERSION_TWO, mTables, new QueryFactoryImpl());
         sqlDb = mDatabaseHelper.getWritableDatabase();
         assertNotNull(sqlDb);
@@ -151,8 +158,8 @@ public class DatabaseHelperTest extends AndroidTestCase {
         cursor = sqlDb.query(TABLE1, null, null, null, null, null, null);
         assertEquals(5, cursor.getColumnCount());
 
-        assertEquals("Column4", cursor.getColumnName(3));
-        assertEquals("Column5", cursor.getColumnName(4));
+        MoreAsserts.assertNotEqual(-1, cursor.getColumnIndex(COLUMN_4));
+        MoreAsserts.assertNotEqual(-1, cursor.getColumnIndex(COLUMN_5));
 
         sqlDb.close();
     }

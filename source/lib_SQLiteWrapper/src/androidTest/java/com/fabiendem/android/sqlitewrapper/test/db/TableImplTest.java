@@ -8,7 +8,9 @@ import com.fabiendem.android.sqlitewrapper.db.table.Table;
 import com.fabiendem.android.sqlitewrapper.db.table.TableImpl;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Fabien on 21/03/2014.
@@ -19,12 +21,20 @@ public class TableImplTest extends AndroidTestCase {
 
     private static final String TABLE_NAME_TEST_VALUE = "MyTableName";
     private static final int TABLE_SINCE_VERSION_TEST_VALUE = 1;
-    private static final Column[] COLUMNS_TEST_VALUE = new Column[] {
-            new ColumnImpl("Kikou", "integer primary_key", 1),
-            new ColumnImpl("Kikou1", "string", 1),
-            new ColumnImpl("Kikou2", "boolean", 2),
-            new ColumnImpl("Kikou3", "string", 3),
-    };
+
+    private static final String COLUMN_1 = "id";
+    private static final String COLUMN_2 = "kikou1";
+    private static final String COLUMN_3 = "kikou2";
+    private static final String COLUMN_4 = "kikou3";
+
+    // Use LinkedHashMap to respect the order for the CREATE query
+    private static final Map<String, Column> COLUMNS_TEST_VALUE = new LinkedHashMap<String, Column>();
+    static {
+        COLUMNS_TEST_VALUE.put(COLUMN_1, new ColumnImpl(COLUMN_1, "integer primary_key", 1));
+        COLUMNS_TEST_VALUE.put(COLUMN_2, new ColumnImpl(COLUMN_2, "string", 1));
+        COLUMNS_TEST_VALUE.put(COLUMN_3, new ColumnImpl(COLUMN_3, "integer", 2));
+        COLUMNS_TEST_VALUE.put(COLUMN_4, new ColumnImpl(COLUMN_4, "boolean", 3));
+    }
 
 
     @Override
@@ -44,8 +54,8 @@ public class TableImplTest extends AndroidTestCase {
         String createTableQuery = mTable.getCreateTableQuery(1);
         String createTableQueryExpected =
                 "CREATE TABLE " + mTable.getName() + " (" +
-                        COLUMNS_TEST_VALUE[0].getColumnDefinitionSql() + ", " +
-                        COLUMNS_TEST_VALUE[1].getColumnDefinitionSql() +
+                        COLUMNS_TEST_VALUE.get(COLUMN_1).getColumnDefinitionSql() + ", " +
+                        COLUMNS_TEST_VALUE.get(COLUMN_2).getColumnDefinitionSql() +
                         ");";
         assertEquals(createTableQueryExpected, createTableQuery);
 
@@ -53,9 +63,9 @@ public class TableImplTest extends AndroidTestCase {
         createTableQuery = mTable.getCreateTableQuery(2);
         createTableQueryExpected =
                 "CREATE TABLE " + mTable.getName() + " (" +
-                        COLUMNS_TEST_VALUE[0].getColumnDefinitionSql() + ", " +
-                        COLUMNS_TEST_VALUE[1].getColumnDefinitionSql() + ", " +
-                        COLUMNS_TEST_VALUE[2].getColumnDefinitionSql() +
+                        COLUMNS_TEST_VALUE.get(COLUMN_1).getColumnDefinitionSql() + ", " +
+                        COLUMNS_TEST_VALUE.get(COLUMN_2).getColumnDefinitionSql() + ", " +
+                        COLUMNS_TEST_VALUE.get(COLUMN_3).getColumnDefinitionSql() +
                         ");";
         assertEquals(createTableQueryExpected, createTableQuery);
 
@@ -63,10 +73,10 @@ public class TableImplTest extends AndroidTestCase {
         createTableQuery = mTable.getCreateTableQuery(3);
         createTableQueryExpected =
                 "CREATE TABLE " + mTable.getName() + " (" +
-                        COLUMNS_TEST_VALUE[0].getColumnDefinitionSql() + ", " +
-                        COLUMNS_TEST_VALUE[1].getColumnDefinitionSql() + ", " +
-                        COLUMNS_TEST_VALUE[2].getColumnDefinitionSql() + ", " +
-                        COLUMNS_TEST_VALUE[3].getColumnDefinitionSql() +
+                        COLUMNS_TEST_VALUE.get(COLUMN_1).getColumnDefinitionSql() + ", " +
+                        COLUMNS_TEST_VALUE.get(COLUMN_2).getColumnDefinitionSql() + ", " +
+                        COLUMNS_TEST_VALUE.get(COLUMN_3).getColumnDefinitionSql() + ", " +
+                        COLUMNS_TEST_VALUE.get(COLUMN_4).getColumnDefinitionSql() +
                         ");";
         assertEquals(createTableQueryExpected, createTableQuery);
     }
@@ -80,7 +90,7 @@ public class TableImplTest extends AndroidTestCase {
         assertEquals(1, upgradeTableQueries.size());
         String upgrade1to2QueryExpected = "ALTER TABLE " + mTable.getName() + " " +
                 "ADD COLUMN " +
-                COLUMNS_TEST_VALUE[2].getColumnDefinitionSql() +
+                COLUMNS_TEST_VALUE.get(COLUMN_3).getColumnDefinitionSql() +
                 ";";
         assertEquals(upgrade1to2QueryExpected, upgradeTableQueries.get(0));
 
@@ -89,7 +99,7 @@ public class TableImplTest extends AndroidTestCase {
         assertEquals(1, upgradeTableQueries.size());
         String upgrade2to3QueryExpected = "ALTER TABLE " + mTable.getName() + " " +
                 "ADD COLUMN " +
-                COLUMNS_TEST_VALUE[3].getColumnDefinitionSql() +
+                COLUMNS_TEST_VALUE.get(COLUMN_4).getColumnDefinitionSql() +
                 ";";
         assertEquals(upgrade2to3QueryExpected, upgradeTableQueries.get(0));
 
@@ -99,11 +109,11 @@ public class TableImplTest extends AndroidTestCase {
         List<String> upgrade1to3QueriesExpected = new ArrayList<String>();
         upgrade1to3QueriesExpected.add("ALTER TABLE " + mTable.getName() + " " +
                                         "ADD COLUMN " +
-                                        COLUMNS_TEST_VALUE[2].getColumnDefinitionSql() +
+                                        COLUMNS_TEST_VALUE.get(COLUMN_3).getColumnDefinitionSql() +
                                         ";");
         upgrade1to3QueriesExpected.add("ALTER TABLE " + mTable.getName() + " " +
                 "ADD COLUMN " +
-                COLUMNS_TEST_VALUE[3].getColumnDefinitionSql() +
+                COLUMNS_TEST_VALUE.get(COLUMN_4).getColumnDefinitionSql() +
                 ";");
 
         assertEquals(upgrade1to3QueriesExpected, upgradeTableQueries);

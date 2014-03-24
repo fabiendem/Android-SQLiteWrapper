@@ -10,7 +10,9 @@ import com.fabiendem.android.sqlitewrapper.db.table.Table;
 import com.fabiendem.android.sqlitewrapper.db.table.TableImpl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Fabien on 21/03/2014.
@@ -28,28 +30,29 @@ public class QueryFactoryImplTest extends AndroidTestCase {
 
     private void addTable1Version1() {
         // Add a table in the version 1
-        mTables.add(new TableImpl("Table1", 1, new Column[]{
-                new ColumnImpl("Column1", "integer", 1),
-                new ColumnImpl("Column2", "string", 1)
-        }));
+        Map<String, Column> columns = new HashMap<String, Column>();
+        columns.put("Column1", new ColumnImpl("Column1", "integer", 1));
+        columns.put("Column2", new ColumnImpl("Column2", "string", 1));
+        mTables.add(new TableImpl("Table1", 1, columns));
     }
 
     private void addTable2Version1() {
-        mTables.add(new TableImpl("Table2", 1, new Column[]{
-                new ColumnImpl("Column1Table2", "integer", 1),
-                new ColumnImpl("Column2Table2", "string", 1),
-                new ColumnImpl("Column3Table2", "boolean", 2),
-                new ColumnImpl("Column4Table2", "integer", 3),
-        }));
+        Map<String, Column> columns = new HashMap<String, Column>();
+        columns.put("Column1Table2", new ColumnImpl("Column1Table2", "integer", 1));
+        columns.put("Column2Table2", new ColumnImpl("Column2Table2", "string", 1));
+        columns.put("Column3Table2", new ColumnImpl("Column3Table2", "string", 2));
+        columns.put("Column4Table2", new ColumnImpl("Column4Table2", "string", 3));
+        mTables.add(new TableImpl("Table2", 1, columns));
+
     }
 
     private void addTable3Version2() {
-        mTables.add(new TableImpl("Table3", 2, new Column[]{
-                new ColumnImpl("Column1Table3", "integer", 2),
-                new ColumnImpl("Column2Table3", "string", 2),
-                new ColumnImpl("Column3Table3", "boolean", 3),
-                new ColumnImpl("Column4Table3", "integer", 4),
-        }));
+        Map<String, Column> columns = new HashMap<String, Column>();
+        columns.put("Column1Table3", new ColumnImpl("Column1Table3", "integer", 2));
+        columns.put("Column2Table3", new ColumnImpl("Column2Table3", "string", 3));
+        columns.put("Column3Table3", new ColumnImpl("Column3Table3", "string", 3));
+        columns.put("Column4Table3", new ColumnImpl("Column4Table3", "string", 4));
+        mTables.add(new TableImpl("Table3", 2, columns));
     }
 
     @Override

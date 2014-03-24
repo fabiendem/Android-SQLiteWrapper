@@ -4,15 +4,16 @@ import com.fabiendem.android.sqlitewrapper.db.column.Column;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Fabien on 21/03/2014.
  */
 public class TableImpl implements Table {
 
-    private String mName;
+    private String mTableName;
     private int mSinceVersion;
-    private Column[] mColumns;
+    private Map<String, Column> mColumns;
 
     /**
      *
@@ -20,8 +21,8 @@ public class TableImpl implements Table {
      * @param sinceVersion
      * @param columns
      */
-    public TableImpl(String name, int sinceVersion, Column[] columns) {
-        mName = name;
+    public TableImpl(String name, int sinceVersion, Map<String, Column> columns) {
+        mTableName = name;
         if (sinceVersion < 1) throw new IllegalArgumentException("Version must be >= 1, was " + sinceVersion);
         mSinceVersion = sinceVersion;
         mColumns = columns;
@@ -29,7 +30,7 @@ public class TableImpl implements Table {
 
     @Override
     public String getName() {
-        return mName;
+        return mTableName;
     }
 
     @Override
@@ -38,14 +39,14 @@ public class TableImpl implements Table {
     }
 
     @Override
-    public Column[] getColumns() {
+    public Map<String, Column> getColumns() {
         return mColumns;
     }
 
     @Override
     public String getCreateTableQuery(int version) {
         if (version < 1) throw new IllegalArgumentException("Version must be >= 1, was " + version);
-        return String.format("CREATE TABLE %s (%s);", mName, getColumnsSql(version));
+        return String.format("CREATE TABLE %s (%s);", mTableName, getColumnsSql(version));
     }
 
     @Override
@@ -61,12 +62,13 @@ public class TableImpl implements Table {
             return commandsSet;
         }
 
-        for (Column column : mColumns) {
+        for (String columnName : mColumns.keySet()) {
+            Column column = mColumns.get(columnName);
             int sinceVersion = column.getSinceVersion();
             if (sinceVersion > oldVersion && sinceVersion <= newVersion) {
                 StringBuilder builder = new StringBuilder();
                 builder.append("ALTER TABLE ");
-                builder.append(mName);
+                builder.append(mTableName);
                 builder.append(" ADD COLUMN ");
                 builder.append(column.getColumnDefinitionSql());
                 builder.append(";");
@@ -78,7 +80,9 @@ public class TableImpl implements Table {
 
     private String getColumnsSql(int version) {
         StringBuilder builder = new StringBuilder();
-        for (Column column : mColumns) {
+
+        for (String columnName : mColumns.keySet()) {
+            Column column = mColumns.get(columnName);
             if (column.getSinceVersion() <= version) {
                 if (builder.length() != 0) {
                     builder.append(", ");

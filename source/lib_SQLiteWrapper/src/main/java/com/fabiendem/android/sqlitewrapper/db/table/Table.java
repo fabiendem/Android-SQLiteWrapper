@@ -3,6 +3,7 @@ package com.fabiendem.android.sqlitewrapper.db.table;
 import com.fabiendem.android.sqlitewrapper.db.column.Column;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Fabien on 21/03/2014.
@@ -13,7 +14,7 @@ public interface Table {
 
     public int getSinceVersion();
 
-    public Column[] getColumns();
+    public Map<String, Column> getColumns();
 
     public String getCreateTableQuery(int version);
 
