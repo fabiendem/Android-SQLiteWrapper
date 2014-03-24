@@ -14,6 +14,8 @@ public interface Table {
 
     public int getSinceVersion();
 
+    public void putColumn(Column column);
+
     public Map<String, Column> getColumns();
 
     public String getCreateTableQuery(int version);

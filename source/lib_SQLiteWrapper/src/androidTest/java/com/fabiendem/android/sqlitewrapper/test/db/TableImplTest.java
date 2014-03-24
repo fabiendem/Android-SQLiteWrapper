@@ -49,6 +49,18 @@ public class TableImplTest extends AndroidTestCase {
         assertEquals(COLUMNS_TEST_VALUE, mTable.getColumns());
     }
 
+    public void testPutNewColumn() {
+        Map<String, Column> columns = mTable.getColumns();
+        assertEquals(4, columns.size());
+
+        Column columnInserted = new ColumnImpl("kikou4", "integer", 1);
+        mTable.putColumn(columnInserted);
+
+        columns = mTable.getColumns();
+        assertEquals(5, columns.size());
+        assertEquals(columnInserted, columns.get("kikou4"));
+    }
+
     public void testGetCreateTableQuery() {
         // Version 1
         String createTableQuery = mTable.getCreateTableQuery(1);

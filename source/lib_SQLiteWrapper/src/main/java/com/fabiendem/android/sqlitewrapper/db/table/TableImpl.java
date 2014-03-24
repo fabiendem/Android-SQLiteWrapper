@@ -3,6 +3,7 @@ package com.fabiendem.android.sqlitewrapper.db.table;
 import com.fabiendem.android.sqlitewrapper.db.column.Column;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,14 @@ public class TableImpl implements Table {
         mColumns = columns;
     }
 
+    public TableImpl(String name, int sinceVersion) {
+        mTableName = name;
+        if (sinceVersion < 1) throw new IllegalArgumentException("Version must be >= 1, was " + sinceVersion);
+        mSinceVersion = sinceVersion;
+        // We prefer LinkedHashMap as it keep the order in which the columns are added
+        mColumns = new LinkedHashMap<String, Column>();
+    }
+
     @Override
     public String getName() {
         return mTableName;
@@ -36,6 +45,11 @@ public class TableImpl implements Table {
     @Override
     public int getSinceVersion() {
         return mSinceVersion;
+    }
+
+    @Override
+    public void putColumn(Column column) {
+        mColumns.put(column.getColumnName(), column);
     }
 
     @Override
